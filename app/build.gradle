@@ -1,0 +1,117 @@
+import dependencies.Deps
+import dependencies.Libraries
+
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'kotlin-android-extensions'
+    id 'com.google.gms.google-services'
+}
+
+android {
+    compileSdkVersion ProjectConfiguration.compileSdkVersion
+
+    buildToolsVersion ProjectConfiguration.buildToolsVersion
+
+    defaultConfig {
+
+        applicationId ProjectConfiguration.applicationId
+
+        minSdkVersion ProjectConfiguration.minSdkVersion
+
+        targetSdkVersion ProjectConfiguration.targetSdkVersion
+
+        versionCode ProjectConfiguration.versionCode
+
+        versionName ProjectConfiguration.versionName
+
+        testInstrumentationRunner ProjectConfiguration.testInstrumentationRunner
+    }
+
+
+    compileOptions {
+
+        sourceCompatibility JavaVersion.VERSION_1_8
+
+        targetCompatibility JavaVersion.VERSION_1_8
+
+    }
+    buildFeatures {
+        dataBinding true
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    dexOptions { jumboMode = true }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('../keys/debugkey.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+
+        release {
+            storeFile file(System.getenv("KEYSTORE") ?: "../keys/release.keystore")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias System.getenv("KEY_ALIAS")
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
+    }
+
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            debuggable true
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+    packagingOptions {
+        pickFirst 'publicsuffixes.gz'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.md'
+        exclude 'META-INF/LICENSE-notice.md'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/AL2.0'
+        exclude 'META-INF/LGPL2.1'
+    }
+}
+
+
+dependencies {
+    implementation Libraries.Kotlin.Ktx.stdlib
+    implementation Libraries.Kotlin.Ktx.core
+    implementation Libraries.AndroidSDK.appcompat
+    implementation Libraries.AndroidSDK.constraint_layout
+    implementation Libraries.AndroidSDK.fragment
+    implementation Libraries.Google.material
+
+    testImplementation Libraries.Testing.junit_test
+    androidTestImplementation Libraries.Testing.android_junit_test
+    androidTestImplementation Libraries.Testing.espresso
+    debugImplementation Libraries.Testing.fragment_testing
+
+    debugImplementation Deps.Flipper.core
+    debugImplementation Deps.Flipper.network
+    debugImplementation Deps.Flipper.loader
+    releaseImplementation Deps.Flipper.noop
+
+
+
+}
